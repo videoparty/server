@@ -1,0 +1,19 @@
+{
+  "files": [
+    "src/*.ts",
+    "src/model/events/*.ts",
+    "src/model/*.ts",
+    "src/socketlisteners/*.ts",
+    "src/socketlisteners/minecraftserver/*.ts",
+    "src/socketlisteners/webclient/*.ts"
+  ],
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "target": "es5",
+    "outDir": "./dist",
+    "lib": [
+      "es6",
+      "es2016.array.include"
+    ]
+  }
+}
