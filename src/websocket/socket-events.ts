@@ -65,6 +65,7 @@ export class SocketEvents {
      * Starts a new video for all users
      */
     private onStartVideo(data: StartVideoData, socket: PartyMemberSocket) {
+        if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party) return;
         party.currentVideo = {videoId: data.videoId, ref: data.ref};
@@ -81,8 +82,9 @@ export class SocketEvents {
      * the currentTime will be provided by the first member of the party.
      */
     private onStartVideoForMember(data: StartVideoForMemberData, socket: PartyMemberSocket) {
+        if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
-        if (!party.currentVideo) return;
+        if (!party || !party.currentVideo) return;
 
         for (const client of party.connectedClients) {
             if (client.id == data.forMemberId) {
@@ -103,8 +105,9 @@ export class SocketEvents {
      * the seeking (and buffering) is done.
      */
     private onSeekVideo(data: {time: number}, socket: PartyMemberSocket) {
+        if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
-        if (!party.currentVideo || party.currentVideo.seekToTime) return;
+        if (!party || !party.currentVideo || party.currentVideo.seekToTime) return;
         socket.readyToPlay = true;
 
         for (const client of party.connectedClients) {
@@ -119,8 +122,9 @@ export class SocketEvents {
      * Party member signals it has loaded the player and is ready to start watching
      */
     private onPlayerReady(socket: PartyMemberSocket) {
+        if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
-        if (!party.currentVideo) return;
+        if (!party || !party.currentVideo) return;
         socket.readyToPlay = true;
         console.log('Member is ready to play in party ' + socket.partyId);
 
@@ -143,8 +147,9 @@ export class SocketEvents {
      * Resumes / plays a new video for all users
      */
     private onPlayVideo(socket: PartyMemberSocket) {
+        if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
-        if (!party.currentVideo) return;
+        if (!party || !party.currentVideo) return;
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
             client.emit('play-video');
@@ -157,8 +162,9 @@ export class SocketEvents {
      * Also resets the currentTime.
      */
     private onPauseVideo(data: {time: number}, socket: PartyMemberSocket) {
+        if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
-        if (!party.currentVideo) return;
+        if (!party || !party.currentVideo) return;
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
             client.emit('pause-video', {time: data.time});
@@ -170,7 +176,9 @@ export class SocketEvents {
      * Closes the webplayer for all members
      */
     private onCloseVideo(socket: PartyMemberSocket) {
+        if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
+        if (!party) return;
         party.currentVideo = undefined;
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
