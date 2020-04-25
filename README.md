@@ -4,6 +4,7 @@
 </p>
 
 Watch video's from primevideo.com together in sync! This server facilitates synchronization features using a websocket.
+The [chrome extension](https://github.com/videoparty/prime-chrome) handles all client-side actions (start video, pause, resume, seek time) coming from or going to the server.
 
 ## Setup & run
 Make sure your machine runs [Node.js](https://nodejs.org/) version 10 or above.
