@@ -5,6 +5,7 @@
   "author": "Marnix van den Bent",
   "license": "Apache-2.0",
   "scripts": {
+    "build": "tsc",
     "start": "ts-node src/main.ts",
     "forever": "tsc && forever start dist/main.js"
   },
