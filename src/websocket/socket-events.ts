@@ -34,7 +34,7 @@ export class SocketEvents {
     /**
      * Join a (new) party
      */
-    private onJoinParty(data: JoinPartyData, socket: PartyMemberSocket) {
+    public onJoinParty(data: JoinPartyData, socket: PartyMemberSocket) {
         if (!data.partyId || data.partyId.length > 5 || data.partyId.length <= 0) {
             return; // Invalid party code
         }
@@ -64,7 +64,7 @@ export class SocketEvents {
     /**
      * Starts a new video for all users
      */
-    private onStartVideo(data: StartVideoData, socket: PartyMemberSocket) {
+    public onStartVideo(data: StartVideoData, socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party) return;
@@ -81,7 +81,7 @@ export class SocketEvents {
      * When a new member joins during a video being played,
      * the currentTime will be provided by the first member of the party.
      */
-    private onStartVideoForMember(data: StartVideoForMemberData, socket: PartyMemberSocket) {
+    public onStartVideoForMember(data: StartVideoForMemberData, socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party || !party.currentVideo) return;
@@ -104,7 +104,7 @@ export class SocketEvents {
      * Every member will signal with 'player-ready' when
      * the seeking (and buffering) is done.
      */
-    private onSeekVideo(data: {time: number}, socket: PartyMemberSocket) {
+    public onSeekVideo(data: {time: number}, socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party || !party.currentVideo || party.currentVideo.seekToTime) return;
@@ -121,7 +121,7 @@ export class SocketEvents {
     /**
      * Party member signals it has loaded the player and is ready to start watching
      */
-    private onPlayerReady(socket: PartyMemberSocket) {
+    public onPlayerReady(socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party || !party.currentVideo) return;
@@ -146,7 +146,7 @@ export class SocketEvents {
     /**
      * Resumes / plays a new video for all users
      */
-    private onPlayVideo(socket: PartyMemberSocket) {
+    public onPlayVideo(socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party || !party.currentVideo) return;
@@ -161,7 +161,7 @@ export class SocketEvents {
      * Pauses a new video for all members
      * Also resets the currentTime.
      */
-    private onPauseVideo(data: {time: number}, socket: PartyMemberSocket) {
+    public onPauseVideo(data: {time: number}, socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party || !party.currentVideo) return;
@@ -175,7 +175,7 @@ export class SocketEvents {
     /**
      * Closes the webplayer for all members
      */
-    private onCloseVideo(socket: PartyMemberSocket) {
+    public onCloseVideo(socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party) return;
@@ -190,7 +190,7 @@ export class SocketEvents {
     /**
      * Clean up after a client disconnected
      */
-    private onSocketDisconnect(socket: PartyMemberSocket) {
+    public onSocketDisconnect(socket: PartyMemberSocket) {
         this.onLeaveParty(socket);
         console.log('Client disconnected');
     }
@@ -198,7 +198,7 @@ export class SocketEvents {
     /**
      * Leave a party and clean up if that was the last member
      */
-    private onLeaveParty(socket: PartyMemberSocket) {
+    public onLeaveParty(socket: PartyMemberSocket) {
         if (!socket.partyId) {
             return;
         }
@@ -217,5 +217,12 @@ export class SocketEvents {
                 console.log('Removed party ' + socket.partyId);
             }
         }
+    }
+
+    /**
+     * Get iterator for all active parties
+     */
+    public getAllActiveParties() {
+        return this.activeParties.entries();
     }
 }
