@@ -1,4 +1,6 @@
 # Prime Video Party server
+![Build](https://github.com/videoparty/server/workflows/Build/badge.svg)
+
 <p style="text-align: center" align="center">
   <img src="https://primevideoparty.com/logo-full.png" alt="PvP logo"/>
 </p>
