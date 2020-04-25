@@ -1,6 +1,6 @@
 # This workflow will do a clean install of node dependencies and build the source code
 
-name: Node.js CI
+name: Build
 
 on:
   push:
@@ -23,6 +23,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: npm ci
       - run: npm run build
         env:
           CI: true
