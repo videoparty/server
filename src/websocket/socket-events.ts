@@ -48,12 +48,15 @@ export class SocketEvents {
                 videoId: data.videoId
             })
         } else { // Join existing party and inform all members
+            party.connectedClients.push(socket);
             for (const client of party.connectedClients) {
-                client.emit('join-party', {member: socket.id});
+                client.emit('join-party', {
+                    currentMembers: party.connectedClients.map((m => m.id)),
+                    member: socket.id // The new member
+                });
                 // Pause video for all members until new member signals it's ready to play
                 client.emit('pause-video');
             }
-            party.connectedClients.push(socket);
             // Getting current time from first party member
             party.connectedClients[0].emit('start-video-for-member', {forMemberId: socket.id});
         }
@@ -104,7 +107,7 @@ export class SocketEvents {
      * Every member will signal with 'player-ready' when
      * the seeking (and buffering) is done.
      */
-    public onSeekVideo(data: {time: number}, socket: PartyMemberSocket) {
+    public onSeekVideo(data: { time: number }, socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party || !party.currentVideo || party.currentVideo.seekToTime) return;
@@ -115,7 +118,7 @@ export class SocketEvents {
             client.readyToPlay = false;
             client.emit('seek-video', data);
         }
-        console.log('Video seek to '+ data.time +'s for party ' + socket.partyId);
+        console.log('Video seek to ' + data.time + 's for party ' + socket.partyId);
     }
 
     /**
@@ -161,7 +164,7 @@ export class SocketEvents {
      * Pauses a new video for all members
      * Also resets the currentTime.
      */
-    public onPauseVideo(data: {time: number}, socket: PartyMemberSocket) {
+    public onPauseVideo(data: { time: number }, socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party || !party.currentVideo) return;
@@ -208,7 +211,10 @@ export class SocketEvents {
             const i = party.connectedClients.indexOf(socket);
             party.connectedClients.splice(i, 1);
             for (const client of party.connectedClients) {
-                client.emit('left-party', {user: socket.id});
+                client.emit('left-party', {
+                    currentMembers: party.connectedClients.map((m => m.id)),
+                    member: socket.id
+                });
             }
             console.log('Client left party ' + socket.partyId);
 
