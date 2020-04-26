@@ -1,3 +1,6 @@
+# 1.1.0 - 26-04-2020
+- When a party member joins or leaves, the message now contains a list of all member ID's
+
 # 1.0.1 - 25-04-2020
 - Added [README](README.md) and [LICENSE](LICENSE)
 - Setup initial CI build
