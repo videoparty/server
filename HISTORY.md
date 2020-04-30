@@ -1,3 +1,6 @@
+# 1.2.0 - 30-04-2020
+- Sending member username for each initiated action
+
 # 1.1.0 - 26-04-2020
 - When a party member joins or leaves, the message now contains a list of all member ID's
 
