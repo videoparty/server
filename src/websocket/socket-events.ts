@@ -41,21 +41,25 @@ export class SocketEvents {
 
         socket.partyId = data.partyId;
         socket.readyToPlay = false;
+        socket.displayName = data.displayName && data.displayName.length < 21 ? data.displayName : socket.id;
         const party = this.activeParties.get(socket.partyId);
         if (!party) { // Create new party
             this.activeParties.set(socket.partyId, {
                 connectedClients: [socket],
                 videoId: data.videoId
-            })
+            });
+            socket.emit('join-party', {
+                currentMembers: [socket.id],
+                member: {id: socket.id, displayName: socket.displayName}, // The new member
+            });
         } else { // Join existing party and inform all members
             party.connectedClients.push(socket);
             for (const client of party.connectedClients) {
                 client.emit('join-party', {
                     currentMembers: party.connectedClients.map((m => m.id)),
-                    member: socket.id // The new member
+                    member: {id: socket.id, displayName: socket.displayName}, // The new member
+                    pause: true // Pause video for all members until new member signals it's ready to play
                 });
-                // Pause video for all members until new member signals it's ready to play
-                client.emit('pause-video');
             }
             // Getting current time from first party member
             party.connectedClients[0].emit('start-video-for-member', {forMemberId: socket.id});
@@ -72,6 +76,7 @@ export class SocketEvents {
         const party = this.activeParties.get(socket.partyId);
         if (!party) return;
         party.currentVideo = {videoId: data.videoId, ref: data.ref};
+        data.byMemberName = socket.displayName;
 
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
@@ -94,7 +99,8 @@ export class SocketEvents {
                 client.emit('start-video', {
                     videoId: party.currentVideo.videoId,
                     ref: party.currentVideo.ref,
-                    time: data.time
+                    time: data.time,
+                    byMemberName: socket.displayName
                 });
                 return;
             }
@@ -116,7 +122,10 @@ export class SocketEvents {
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
             client.readyToPlay = false;
-            client.emit('seek-video', data);
+            client.emit('seek-video', {
+                time: data.time,
+                byMemberName: socket.displayName
+            });
         }
         console.log('Video seek to ' + data.time + 's for party ' + socket.partyId);
     }
@@ -141,7 +150,7 @@ export class SocketEvents {
         setTimeout(() => {
             // Everyone is ready to play, let's go!
             for (const client of party.connectedClients) {
-                client.emit('play-video');
+                client.emit('play-video', {coordinated: true});
             }
         }, 100);
     }
@@ -155,7 +164,7 @@ export class SocketEvents {
         if (!party || !party.currentVideo) return;
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
-            client.emit('play-video');
+            client.emit('play-video', {byMemberName: socket.displayName});
         }
         console.log('Video played for party ' + socket.partyId);
     }
@@ -170,7 +179,10 @@ export class SocketEvents {
         if (!party || !party.currentVideo) return;
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
-            client.emit('pause-video', {time: data.time});
+            client.emit('pause-video', {
+                time: data.time,
+                byMemberName: socket.displayName
+            });
         }
         console.log('Video paused for party ' + socket.partyId);
     }
@@ -185,7 +197,7 @@ export class SocketEvents {
         party.currentVideo = undefined;
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
-            client.emit('close-video');
+            client.emit('close-video', {byMemberName: socket.displayName});
         }
         console.log('Video closed for party ' + socket.partyId);
     }
@@ -213,7 +225,7 @@ export class SocketEvents {
             for (const client of party.connectedClients) {
                 client.emit('left-party', {
                     currentMembers: party.connectedClients.map((m => m.id)),
-                    member: socket.id
+                    member: {id: socket.id, displayName: socket.displayName}
                 });
             }
             console.log('Client left party ' + socket.partyId);
