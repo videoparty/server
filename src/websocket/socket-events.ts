@@ -36,7 +36,7 @@ export class SocketEvents {
      * Join a (new) party
      */
     public onJoinParty(data: JoinPartyData, socket: PartyMemberSocket) {
-        if (!data.partyId || data.partyId.length > 5 || data.partyId.length <= 0) {
+        if (!data.partyId || data.partyId.length !== 5) {
             return; // Invalid party code
         }
 
