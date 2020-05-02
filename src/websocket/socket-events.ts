@@ -23,6 +23,7 @@ export class SocketEvents {
         socket.on('join-party', (data) => this.onJoinParty(data, socket));
         socket.on('leave-party', () => this.onLeaveParty(socket));
         socket.on('player-ready', () => this.onPlayerReady(socket));
+        socket.on('watching-trailer', () => this.onWatchingTrailer(socket));
         socket.on('start-video', (data) => this.onStartVideo(data, socket));
         socket.on('seek-video', (data) => this.onSeekVideo(data, socket));
         socket.on('start-video-for-member', (data) => this.onStartVideoForMember(data, socket));
@@ -83,6 +84,22 @@ export class SocketEvents {
             client.emit('start-video', data);
         }
         console.log('Video started for party ' + socket.partyId);
+    }
+
+    /**
+     * Informs the party that this member is watching a trailer.
+     * The rest of the party must wait for the member to finish/skip the trailer.
+     */
+    public onWatchingTrailer(socket: PartyMemberSocket) {
+        if (!socket.partyId) return;
+        const party = this.activeParties.get(socket.partyId);
+        if (!party) return;
+
+        for (const client of party.connectedClients) {
+            if (client.id === socket.id) continue;
+            client.emit('watching-trailer', {byMemberName: socket.displayName});
+        }
+        console.log('A member is watching a trailer in party ' + socket.partyId);
     }
 
     /**
