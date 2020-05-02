@@ -1,3 +1,6 @@
+# 1.3.0 - 02-05-2020
+- Relaying the `watching-trailer` message to inform other party members that they need to wait
+
 # 1.2.0 - 30-04-2020
 - Sending member username for each initiated action
 
