@@ -42,7 +42,7 @@ export class SocketEvents {
 
         socket.partyId = data.partyId;
         socket.readyToPlay = false;
-        socket.displayName = data.displayName && data.displayName.length < 21 ? data.displayName : socket.id;
+        socket.displayName = data.displayName && data.displayName !== 'You' && data.displayName.length < 21 ? data.displayName : socket.id;
         const party = this.activeParties.get(socket.partyId);
         if (!party) { // Create new party
             this.activeParties.set(socket.partyId, {
