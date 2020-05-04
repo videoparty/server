@@ -3,6 +3,7 @@ import {StartVideoData, StartVideoForMemberData} from "../model/messages/start-v
 import {JoinPartyData} from "../model/messages/join-party-data";
 import {PartyMemberSocket} from "../model/party-member-socket";
 import {Party} from "../model/party";
+import {NextEpisodeData} from "../model/messages/next-episode-data";
 
 export class SocketEvents {
 
@@ -25,6 +26,7 @@ export class SocketEvents {
         socket.on('player-ready', () => this.onPlayerReady(socket));
         socket.on('watching-trailer', () => this.onWatchingTrailer(socket));
         socket.on('start-video', (data) => this.onStartVideo(data, socket));
+        socket.on('next-episode', (data) => this.onNextEpisode(data, socket));
         socket.on('seek-video', (data) => this.onSeekVideo(data, socket));
         socket.on('start-video-for-member', (data) => this.onStartVideoForMember(data, socket));
         socket.on('play-video', () => this.onPlayVideo(socket));
@@ -45,10 +47,11 @@ export class SocketEvents {
         socket.displayName = data.displayName && data.displayName !== 'You' && data.displayName.length < 21 ? data.displayName : socket.id;
         const party = this.activeParties.get(socket.partyId);
         if (!party) { // Create new party
-            this.activeParties.set(socket.partyId, {
-                connectedClients: [socket],
-                videoId: data.videoId
-            });
+            let newParty: Party = {connectedClients: [socket]};
+            if (data.videoId) {
+                newParty.currentVideo = {videoId: data.videoId, ref: 'unknown'};
+            }
+            this.activeParties.set(socket.partyId, newParty);
             socket.emit('join-party', {
                 currentMembers: [socket.id],
                 member: {id: socket.id, displayName: socket.displayName}, // The new member
@@ -89,6 +92,41 @@ export class SocketEvents {
     }
 
     /**
+     * Triggers all clients to go to the next episode
+     */
+    public onNextEpisode(data: NextEpisodeData, socket: PartyMemberSocket) {
+        console.log(data);
+        if (!socket.partyId) return;
+        const party = this.activeParties.get(socket.partyId);
+        if (!party || !party.currentVideo) return;
+
+        function isValidNextEpisodeData(data: NextEpisodeData) {
+            return data.season
+                && typeof data.season === 'number'
+                && data.season > 0
+                && data.episode
+                && typeof data.episode === 'number'
+                && data.episode > 0;
+        }
+
+        if (isValidNextEpisodeData(data)
+            && party.currentVideo.season !== data.season
+            || party.currentVideo.episode !== data.episode) {
+            party.currentVideo.season = data.season;
+            party.currentVideo.episode = data.episode;
+            for (const client of party.connectedClients) {
+                if (client.id === socket.id) continue;
+                client.emit('next-episode', {
+                    season: data.season,
+                    episode: data.episode,
+                    byMemberName: socket.displayName
+                });
+            }
+            console.log('Next episode for party ' + socket.partyId);
+        }
+    }
+
+    /**
      * Informs the party that this member is watching a trailer.
      * The rest of the party must wait for the member to finish/skip the trailer.
      */
@@ -119,7 +157,9 @@ export class SocketEvents {
                     videoId: party.currentVideo.videoId,
                     ref: party.currentVideo.ref,
                     time: data.time,
-                    byMemberName: socket.displayName
+                    byMemberName: socket.displayName,
+                    season: party.currentVideo.season,
+                    episode: party.currentVideo.episode
                 });
                 return;
             }
