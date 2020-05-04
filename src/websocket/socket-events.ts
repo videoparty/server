@@ -78,9 +78,11 @@ export class SocketEvents {
         if (!party) return;
         party.currentVideo = {videoId: data.videoId, ref: data.ref};
         data.byMemberName = socket.displayName;
+        socket.readyToPlay = false;
 
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
+            client.readyToPlay = false;
             client.emit('start-video', data);
         }
         console.log('Video started for party ' + socket.partyId);
