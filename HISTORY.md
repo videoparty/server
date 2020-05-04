@@ -1,3 +1,8 @@
+# 1.4.0 - 05-05-2020
+- Restoring state after server restart
+- Syncing next episode
+- When a new video starts, all members have status `readyToPlay = false`.
+
 # 1.3.0 - 02-05-2020
 - Relaying the `watching-trailer` message to inform other party members that they need to wait
 
