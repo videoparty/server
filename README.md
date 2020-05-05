@@ -22,5 +22,9 @@ use `npm run forever` and set up a reverse proxy with https that points to the P
 ## Contributions
 Spotted a bug or got a new feature in mind? Pull requests are very much appreciated!
 
+## Disclaimer
+**Prime Video** is a trademark of **Amazon Technologies, Inc.**, a subsidiary of **Amazon.com, Inc.**
+The author of this Work is not affiliated with those companies.
+
 ## License
 [apache-2.0](LICENSE)
