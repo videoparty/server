@@ -232,7 +232,7 @@ export class SocketEvents {
      * Pauses a new video for all members
      * Also resets the currentTime.
      */
-    public onPauseVideo(data: { time: number }, socket: PartyMemberSocket) {
+    public onPauseVideo(data: { reason?: string, time?: number }, socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party || !party.currentVideo) return;
@@ -240,6 +240,7 @@ export class SocketEvents {
             if (client.id === socket.id) continue;
             client.emit('pause-video', {
                 time: data.time,
+                reason: data.reason,
                 byMemberName: socket.displayName
             });
         }
