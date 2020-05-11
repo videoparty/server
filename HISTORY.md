@@ -1,3 +1,9 @@
+# 1.4.2 - 11-05-2020
+- Changed partymember structure to an object, containing ID and displayname
+
+# 1.4.1 - 09-05-2020
+- Passing through an optional reason for pausing a video
+
 # 1.4.0 - 05-05-2020
 - Restoring state after server restart
 - Syncing next episode
