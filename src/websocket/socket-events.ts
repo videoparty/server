@@ -53,7 +53,7 @@ export class SocketEvents {
             }
             this.activeParties.set(socket.partyId, newParty);
             socket.emit('join-party', {
-                currentMembers: {id: socket.id, displayName: socket.displayName},
+                currentMembers: [{id: socket.id, displayName: socket.displayName}],
                 member: {id: socket.id, displayName: socket.displayName}, // The new member
             });
         } else { // Join existing party and inform all members
