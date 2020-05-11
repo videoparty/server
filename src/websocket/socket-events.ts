@@ -284,7 +284,7 @@ export class SocketEvents {
             party.connectedClients.splice(i, 1);
             for (const client of party.connectedClients) {
                 client.emit('left-party', {
-                    currentMembers: party.connectedClients.map((m => m.id)),
+                    currentMembers: party.connectedClients.map((m => { return {id: m.id, displayName: m.displayName} })),
                     member: {id: socket.id, displayName: socket.displayName}
                 });
             }
