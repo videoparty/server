@@ -53,14 +53,16 @@ export class SocketEvents {
             }
             this.activeParties.set(socket.partyId, newParty);
             socket.emit('join-party', {
-                currentMembers: [socket.id],
+                currentMembers: {id: socket.id, displayName: socket.displayName},
                 member: {id: socket.id, displayName: socket.displayName}, // The new member
             });
         } else { // Join existing party and inform all members
             party.connectedClients.push(socket);
             for (const client of party.connectedClients) {
                 client.emit('join-party', {
-                    currentMembers: party.connectedClients.map((m => m.id)),
+                    currentMembers: party.connectedClients.map((m => {
+                        return {id: m.id, displayName: m.displayName}
+                    })),
                     member: {id: socket.id, displayName: socket.displayName}, // The new member
                     pause: true // Pause video for all members until new member signals it's ready to play
                 });
@@ -284,7 +286,9 @@ export class SocketEvents {
             party.connectedClients.splice(i, 1);
             for (const client of party.connectedClients) {
                 client.emit('left-party', {
-                    currentMembers: party.connectedClients.map((m => { return {id: m.id, displayName: m.displayName} })),
+                    currentMembers: party.connectedClients.map((m => {
+                        return {id: m.id, displayName: m.displayName}
+                    })),
                     member: {id: socket.id, displayName: socket.displayName}
                 });
             }
