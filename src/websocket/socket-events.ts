@@ -83,6 +83,7 @@ export class SocketEvents {
         if (!party) return;
         party.currentVideo = {videoId: data.videoId, ref: data.ref};
         data.byMemberName = socket.displayName;
+        data.byMember = {id: socket.id, displayName: socket.displayName || 'Unknown'};
         socket.readyToPlay = false;
 
         for (const client of party.connectedClients) {
@@ -121,7 +122,8 @@ export class SocketEvents {
                 client.emit('next-episode', {
                     season: data.season,
                     episode: data.episode,
-                    byMemberName: socket.displayName
+                    byMemberName: socket.displayName,
+                    byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'}
                 });
             }
             console.log('Next episode for party ' + socket.partyId);
@@ -139,7 +141,10 @@ export class SocketEvents {
 
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
-            client.emit('watching-trailer', {byMemberName: socket.displayName});
+            client.emit('watching-trailer', {
+                byMemberName: socket.displayName,
+                byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'}
+            });
         }
         console.log('A member is watching a trailer in party ' + socket.partyId);
     }
@@ -160,6 +165,7 @@ export class SocketEvents {
                     ref: party.currentVideo.ref,
                     time: data.time,
                     byMemberName: socket.displayName,
+                    byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'},
                     season: party.currentVideo.season,
                     episode: party.currentVideo.episode
                 });
@@ -185,7 +191,8 @@ export class SocketEvents {
             client.readyToPlay = false;
             client.emit('seek-video', {
                 time: data.time,
-                byMemberName: socket.displayName
+                byMemberName: socket.displayName,
+                byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'}
             });
         }
         console.log('Video seek to ' + data.time + 's for party ' + socket.partyId);
@@ -225,7 +232,10 @@ export class SocketEvents {
         if (!party || !party.currentVideo) return;
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
-            client.emit('play-video', {byMemberName: socket.displayName});
+            client.emit('play-video', {
+                byMemberName: socket.displayName,
+                byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'}
+            });
         }
         console.log('Video played for party ' + socket.partyId);
     }
@@ -243,7 +253,8 @@ export class SocketEvents {
             client.emit('pause-video', {
                 time: data.time,
                 reason: data.reason,
-                byMemberName: socket.displayName
+                byMemberName: socket.displayName,
+                byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'}
             });
         }
         console.log('Video paused for party ' + socket.partyId);
@@ -259,7 +270,10 @@ export class SocketEvents {
         party.currentVideo = undefined;
         for (const client of party.connectedClients) {
             if (client.id === socket.id) continue;
-            client.emit('close-video', {byMemberName: socket.displayName});
+            client.emit('close-video', {
+                byMemberName: socket.displayName,
+                byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'}
+            });
         }
         console.log('Video closed for party ' + socket.partyId);
     }
