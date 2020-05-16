@@ -4,6 +4,7 @@ import {JoinPartyData} from "../model/messages/join-party-data";
 import {PartyMemberSocket} from "../model/party-member-socket";
 import {Party} from "../model/party";
 import {NextEpisodeData} from "../model/messages/next-episode-data";
+import {SeekTimeData} from "../model/messages/seek-time-data";
 
 export class SocketEvents {
 
@@ -164,6 +165,7 @@ export class SocketEvents {
                     videoId: party.currentVideo.videoId,
                     ref: party.currentVideo.ref,
                     time: data.time,
+                    isLegacyPlayer: data.isLegacyPlayer,
                     byMemberName: socket.displayName,
                     byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'},
                     season: party.currentVideo.season,
@@ -180,10 +182,10 @@ export class SocketEvents {
      * Every member will signal with 'player-ready' when
      * the seeking (and buffering) is done.
      */
-    public onSeekVideo(data: { time: number }, socket: PartyMemberSocket) {
+    public onSeekVideo(data: SeekTimeData, socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
-        if (!party || !party.currentVideo || party.currentVideo.seekToTime) return;
+        if (!party || !party.currentVideo) return;
         socket.readyToPlay = true;
 
         for (const client of party.connectedClients) {
@@ -191,6 +193,7 @@ export class SocketEvents {
             client.readyToPlay = false;
             client.emit('seek-video', {
                 time: data.time,
+                isLegacyPlayer: data.isLegacyPlayer,
                 byMemberName: socket.displayName,
                 byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'}
             });
@@ -213,7 +216,6 @@ export class SocketEvents {
         }
 
         console.log('All members are ready to play the video in party ' + socket.partyId);
-        party.currentVideo.seekToTime = undefined;
 
         setTimeout(() => {
             // Everyone is ready to play, let's go!
@@ -244,7 +246,7 @@ export class SocketEvents {
      * Pauses a new video for all members
      * Also resets the currentTime.
      */
-    public onPauseVideo(data: { reason?: string, time?: number }, socket: PartyMemberSocket) {
+    public onPauseVideo(data: { reason?: string, time?: number, isLegacyPlayer?: boolean }, socket: PartyMemberSocket) {
         if (!socket.partyId) return;
         const party = this.activeParties.get(socket.partyId);
         if (!party || !party.currentVideo) return;
@@ -252,6 +254,7 @@ export class SocketEvents {
             if (client.id === socket.id) continue;
             client.emit('pause-video', {
                 time: data.time,
+                isLegacyPlayer: data.isLegacyPlayer,
                 reason: data.reason,
                 byMemberName: socket.displayName,
                 byMember: {id: socket.id, displayName: socket.displayName || 'Unknown'}

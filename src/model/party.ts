@@ -5,7 +5,6 @@ export interface Party {
     currentVideo?: {
         videoId: string,
         ref: string,
-        seekToTime?: number,
         season?: number,
         episode?: number,
     }

@@ -1,3 +1,7 @@
+# 1.4.3 - 16-05-2020
+- Passing through data about legacy/non-legacy webplayer to correct the playtime
+- Removed unused party variable
+
 # 1.4.2 - 11-05-2020
 - Changed partymember structure to an object, containing ID and displayname
 
