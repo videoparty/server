@@ -1,3 +1,5 @@
+import {PartyMemberInfo} from "../party-member-info";
+
 export interface StartVideoData {
     videoId: string
     ref: string
@@ -11,7 +13,7 @@ export interface StartVideoData {
     /**
      * Set by server
      */
-    byMember?: {id: string, displayName: string}
+    byMember?: PartyMemberInfo
 }
 
 export interface StartVideoForMemberData {

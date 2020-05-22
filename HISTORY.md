@@ -1,3 +1,9 @@
+# 2.0.0 - 22-05-2020
+*Version 2.0 is still backwards-compatible with 1.x and legacy extension versions.*
+- Rewrite to a Chain of Responsibility pattern to handle messages in a scalable way
+- Several bugfixes
+- Updated `ts-node` and `typescript`
+
 # 1.4.3 - 16-05-2020
 - Passing through data about legacy/non-legacy webplayer to correct the playtime
 - Removed unused party variable
