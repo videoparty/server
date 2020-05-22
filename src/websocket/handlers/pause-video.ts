@@ -1,20 +1,17 @@
-import {EventHandler} from "../event-handler";
+import {WatchingPartyEventHandler} from "../event-handler";
 import {PartyMemberSocket} from "../../model/party-member-socket";
 import {WebsocketEvent} from "../../model/websocket-event";
 import {PauseVideoData} from "../../model/messages/pause-video-data";
+import {WatchingParty} from "../../model/party";
 
 /**
  * Pauses a new video for all members
  * Also resets the currentTime.
  */
-export class PauseVideoEventHandler extends EventHandler {
+export class PauseVideoEventHandler extends WatchingPartyEventHandler {
     handleEvents = ['pause-video'];
 
-    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<PauseVideoData>) {
-        if (!socket.partyId) return;
-        const party = this.getActiveParties().get(socket.partyId);
-        if (!party || !party.currentVideo) return;
-
+    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<PauseVideoData>, party: WatchingParty) {
         this.emitToParty(
             'pause-video',
             this.constructPauseVideoData(socket, event),

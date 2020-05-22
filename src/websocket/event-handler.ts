@@ -21,10 +21,7 @@ export abstract class EventHandler {
             await this.handleEvent(socket, event, ...optionalArgs);
         }
 
-        // Call next handler, if present
-        for (const nextHandler of this.nextHandlers) {
-            await nextHandler.handle(socket, event, ...optionalArgs);
-        }
+        await this.handleNext(socket, event, ...optionalArgs);
     }
 
     /**
@@ -33,6 +30,16 @@ export abstract class EventHandler {
     public setNext(handler: EventHandler): EventHandler {
         this.nextHandlers.push(handler);
         return this;
+    }
+
+    /**
+     * Call the next handlers, if present
+     * Only to be used for the abstract classes!
+     */
+    protected async handleNext(socket: PartyMemberSocket, event: WebsocketEvent<any>, ...optionalArgs: any[]) {
+        for (const nextHandler of this.nextHandlers) {
+            await nextHandler.handle(socket, event, ...optionalArgs);
+        }
     }
 
     /**
@@ -81,10 +88,14 @@ export abstract class PartyEventHandler extends EventHandler {
     /**
      * Make sure the socket is in an active party
      */
-    public async handle(socket: PartyMemberSocket, event: WebsocketEvent<any>) {
-        if (!socket.partyId) return;
+    public async handle(socket: PartyMemberSocket, event: WebsocketEvent<any>, ...optionalArgs: any[]) {
+        if (!socket.partyId)
+            return await this.handleNext(socket, event, ...optionalArgs);
+
         const party = this.getActiveParties().get(socket.partyId);
-        if (!party) return;
+
+        if (!party)
+            return await this.handleNext(socket, event, ...optionalArgs);
 
         super.handle(socket, event, party);
     }
@@ -109,10 +120,14 @@ export abstract class WatchingPartyEventHandler extends EventHandler {
     /**
      * Make sure the socket is in an active party
      */
-    public async handle(socket: PartyMemberSocket, event: WebsocketEvent<any>) {
-        if (!socket.partyId) return;
+    public async handle(socket: PartyMemberSocket, event: WebsocketEvent<any>, ...optionalArgs: any[]) {
+        if (!socket.partyId)
+            return await this.handleNext(socket, event, ...optionalArgs);
+
         const party = this.getActiveParties().get(socket.partyId);
-        if (!party || !party.currentVideo) return;
+
+        if (!party || !party.currentVideo)
+            return await this.handleNext(socket, event, ...optionalArgs);
 
         super.handle(socket, event, party);
     }

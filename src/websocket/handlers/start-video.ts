@@ -1,19 +1,16 @@
-import {EventHandler} from "../event-handler";
+import {PartyEventHandler} from "../event-handler";
 import {PartyMemberSocket} from "../../model/party-member-socket";
 import {WebsocketEvent} from "../../model/websocket-event";
 import {StartVideoData} from "../../model/messages/start-video-data";
+import {Party} from "../../model/party";
 
 /**
  * One member starts a new video for the rest of the party
  */
-export class StartVideoEventHandler extends EventHandler {
+export class StartVideoEventHandler extends PartyEventHandler {
     handleEvents = ['start-video'];
 
-    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<StartVideoData>) {
-        if (!socket.partyId) return;
-        const party = this.getActiveParties().get(socket.partyId);
-        if (!party) return;
-
+    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<StartVideoData>, party: Party) {
         // Reset the party's current video info
         party.currentVideo = {
             videoId: event.data.videoId,

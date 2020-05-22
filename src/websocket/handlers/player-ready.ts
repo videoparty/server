@@ -1,17 +1,15 @@
-import {EventHandler} from "../event-handler";
+import {WatchingPartyEventHandler} from "../event-handler";
 import {PartyMemberSocket} from "../../model/party-member-socket";
 import {WebsocketEvent} from "../../model/websocket-event";
+import {WatchingParty} from "../../model/party";
 
 /**
  * Party member signals it is ready to start watching
  */
-export class PlayerReadyEventHandler extends EventHandler {
+export class PlayerReadyEventHandler extends WatchingPartyEventHandler {
     handleEvents = ['player-ready'];
 
-    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<undefined>) {
-        if (!socket.partyId) return;
-        const party = this.getActiveParties().get(socket.partyId);
-        if (!party || !party.currentVideo) return;
+    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<undefined>, party: WatchingParty) {
         socket.readyToPlay = true;
         console.log('Member is ready to play in party ' + socket.partyId);
 

@@ -36,17 +36,15 @@ export class JoinPartyEventHandler extends EventHandler {
      */
     private createNewParty(socket: PartyMemberSocket, data: JoinPartyData) {
         const newMemberInfo = this.getSingleMemberInfo(socket); // id and displayname
-        let newParty: Party = {connectedClients: [socket]};
+        let newParty: Party = {id: socket.partyId as string, connectedClients: [socket]};
 
         // If the member is already playing a video, update our state
         if (data.videoId) {
             newParty.currentVideo = {videoId: data.videoId, ref: 'unknown'};
         }
 
-        // Join party
-        if (socket.partyId != null) {
-            this.getActiveParties().set(socket.partyId, newParty);
-        }
+        // Add new party
+        this.getActiveParties().set(newParty.id, newParty);
 
         // Sending confirm message to member
         socket.emit('join-party', {
@@ -75,6 +73,6 @@ export class JoinPartyEventHandler extends EventHandler {
         // Getting current time from first party member
         party.connectedClients[0].emit('start-video-for-member', {forMemberId: socket.id});
 
-        console.log('New member joined party ' + socket.partyId);
+        console.log('New member joined party ' + party.id);
     }
 }

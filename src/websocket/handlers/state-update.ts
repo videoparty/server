@@ -1,7 +1,6 @@
-import {EventHandler} from "../event-handler";
+import {PartyEventHandler} from "../event-handler";
 import {PartyMemberSocket} from "../../model/party-member-socket";
 import {WebsocketEvent} from "../../model/websocket-event";
-import {JoinPartyData} from "../../model/messages/join-party-data";
 import {Party} from "../../model/party";
 
 /**
@@ -14,14 +13,10 @@ import {Party} from "../../model/party";
  * - watching-trailer
  * - player-ready
  */
-export class StateUpdateEventHandler extends EventHandler {
+export class StateUpdateEventHandler extends PartyEventHandler {
     handleEvents = ['state-update'];
 
-    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<{state: string}>) {
-        if (!socket.partyId) return;
-        const party = this.getActiveParties().get(socket.partyId);
-        if (!party) return;
-
+    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<{state: string}>, party: Party) {
         this.emitToParty('state-update', {
             state: event.data.state,
             byMember: this.getSingleMemberInfo(socket)

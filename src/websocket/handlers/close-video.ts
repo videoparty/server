@@ -1,17 +1,15 @@
-import {EventHandler} from "../event-handler";
+import {WatchingPartyEventHandler} from "../event-handler";
 import {PartyMemberSocket} from "../../model/party-member-socket";
 import {WebsocketEvent} from "../../model/websocket-event";
+import {Party} from "../../model/party";
 
 /**
  * Closes the webplayer for all members
  */
-export class CloseVideoEventHandler extends EventHandler {
+export class CloseVideoEventHandler extends WatchingPartyEventHandler {
     handleEvents = ['close-video'];
 
-    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<undefined>) {
-        if (!socket.partyId) return;
-        const party = this.getActiveParties().get(socket.partyId);
-        if (!party) return;
+    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<undefined>, party: Party) {
         party.currentVideo = undefined;
 
         this.emitToParty('close-video', {

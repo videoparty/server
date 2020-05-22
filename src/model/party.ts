@@ -1,6 +1,7 @@
 import {PartyMemberSocket} from "./party-member-socket";
 
 export interface Party {
+    id: string, // 5-character code
     connectedClients: PartyMemberSocket[]
     currentVideo?: {
         videoId: string,
