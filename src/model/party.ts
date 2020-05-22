@@ -9,3 +9,12 @@ export interface Party {
         episode?: number,
     }
 }
+
+export interface WatchingParty extends Party {
+    currentVideo: {
+        videoId: string,
+        ref: string,
+        season?: number,
+        episode?: number,
+    }
+}

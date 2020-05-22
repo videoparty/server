@@ -26,5 +26,7 @@ export class StateUpdateEventHandler extends EventHandler {
             state: event.data.state,
             byMember: this.getSingleMemberInfo(socket)
         }, party, socket.id);
+
+        console.log('state update for ' + socket.displayName + ': ' + event.data.state);
     }
 }

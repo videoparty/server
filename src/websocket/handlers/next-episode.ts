@@ -1,7 +1,8 @@
-import {EventHandler} from "../event-handler";
+import {WatchingPartyEventHandler} from "../event-handler";
 import {PartyMemberSocket} from "../../model/party-member-socket";
 import {WebsocketEvent} from "../../model/websocket-event";
 import {NextEpisodeData} from "../../model/messages/next-episode-data";
+import {WatchingParty} from "../../model/party";
 
 /**
  * Triggers all clients to go to the next episode.
@@ -10,19 +11,15 @@ import {NextEpisodeData} from "../../model/messages/next-episode-data";
  * This is because many party members could signal 'next episode'
  * for the same episode simultaneously.
  */
-export class NextEpisodeEventHandler extends EventHandler {
+export class NextEpisodeEventHandler extends WatchingPartyEventHandler {
     handleEvents = ['next-episode'];
 
-    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<NextEpisodeData>) {
-        if (!socket.partyId) return;
-        const party = this.getActiveParties().get(socket.partyId);
-        if (!party || !party.currentVideo || !party.currentVideo.season
-            || !party.currentVideo.episode) return;
+    async handleEvent(socket: PartyMemberSocket, event: WebsocketEvent<NextEpisodeData>, party: WatchingParty) {
         const currentSeason = party.currentVideo.season;
         const currentEpisode = party.currentVideo.episode;
 
         if (this.isValidNextEpisodeData(event.data)
-            && this.isDifferentEpisode(currentSeason, currentEpisode, event.data)) {
+            && this.isDifferentEpisode(event.data, currentSeason, currentEpisode)) {
             party.currentVideo.season = event.data.season;
             party.currentVideo.episode = event.data.episode;
 
@@ -42,10 +39,8 @@ export class NextEpisodeEventHandler extends EventHandler {
      */
     private isValidNextEpisodeData(data: NextEpisodeData) {
         return data.season
-            && typeof data.season === 'number'
             && data.season > 0
             && data.episode
-            && typeof data.episode === 'number'
             && data.episode > 0;
     }
 
@@ -53,7 +48,7 @@ export class NextEpisodeEventHandler extends EventHandler {
      * Whether the current party episode & season
      * is different from the given NextEpisodeData
      */
-    private isDifferentEpisode(currentEpisode: number, currentSeason: number, data: NextEpisodeData) {
+    private isDifferentEpisode(data: NextEpisodeData, currentEpisode?: number, currentSeason?: number) {
         return currentSeason !== data.season || currentEpisode !== data.episode
     }
 }
