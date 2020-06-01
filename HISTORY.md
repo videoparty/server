@@ -1,3 +1,6 @@
+# 2.0.1 - 01-06-2020
+- Supporting `chat` message type
+
 # 2.0.0 - 22-05-2020
 *Version 2.0 is still backwards-compatible with 1.x and legacy extension versions.*
 - Rewrite to a Chain of Responsibility pattern to handle messages in a scalable way

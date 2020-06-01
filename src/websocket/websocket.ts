@@ -13,6 +13,7 @@ import {StartVideoEventHandler} from "./handlers/start-video";
 import {StartVideoForMemberEventHandler} from "./handlers/start-video-for-member";
 import {WatchingTrailerEventHandler} from "./handlers/watching-trailer";
 import {StateUpdateEventHandler} from "./handlers/state-update";
+import {ChatEventHandler} from "./handlers/chat";
 
 export class Websocket {
 
@@ -33,7 +34,8 @@ export class Websocket {
         // Chain of Responsibility pattern: Chain all event handlers
         const partiesGetter = () => this.activeParties;
         const eventHandlerChain =
-            new CloseVideoEventHandler(partiesGetter)
+            new ChatEventHandler(partiesGetter)
+                .setNext(new CloseVideoEventHandler(partiesGetter))
                 .setNext(new JoinPartyEventHandler(partiesGetter))
                 .setNext(new LeavePartyEventHandler(partiesGetter))
                 .setNext(new NextEpisodeEventHandler(partiesGetter))
