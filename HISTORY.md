@@ -1,3 +1,6 @@
+# 2.0.2 - 22-06-2020
+- Supporting `update-displayname` message type
+
 # 2.0.1 - 01-06-2020
 - Supporting `chat` message type
 

@@ -14,6 +14,7 @@ import {StartVideoForMemberEventHandler} from "./handlers/start-video-for-member
 import {WatchingTrailerEventHandler} from "./handlers/watching-trailer";
 import {StateUpdateEventHandler} from "./handlers/state-update";
 import {ChatEventHandler} from "./handlers/chat";
+import {UpdateDisplayNameEventHandler} from "./handlers/update-displayname";
 
 export class Websocket {
 
@@ -46,6 +47,7 @@ export class Websocket {
                 .setNext(new StartVideoEventHandler(partiesGetter))
                 .setNext(new StartVideoForMemberEventHandler(partiesGetter))
                 .setNext(new StateUpdateEventHandler(partiesGetter))
+                .setNext(new UpdateDisplayNameEventHandler(partiesGetter))
                 .setNext(new WatchingTrailerEventHandler(partiesGetter));
 
         // Any incoming message will be handled by the chained event handlers
