@@ -1,3 +1,6 @@
+# 2.0.3 - 26-03-2021
+- Updated dependencies
+
 # 2.0.2 - 22-06-2020
 - Supporting `update-displayname` message type
 
