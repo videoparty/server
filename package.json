@@ -1,6 +1,6 @@
 {
   "name": "primevideoparty-server",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "Prime Video Party server, enabling player synchronization between users",
   "author": "Marnix van den Bent",
   "license": "Apache-2.0",

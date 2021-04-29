@@ -1,4 +1,7 @@
-# 2.0.3 - 26-03-2021
+# 2.1.0 - 29-04-2021
+- Supporting several webrtc message types
+
+# 2.0.3 - 26-04-2021
 - Updated dependencies
 
 # 2.0.2 - 22-06-2020

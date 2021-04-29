@@ -15,6 +15,7 @@ import {WatchingTrailerEventHandler} from "./handlers/watching-trailer";
 import {StateUpdateEventHandler} from "./handlers/state-update";
 import {ChatEventHandler} from "./handlers/chat";
 import {UpdateDisplayNameEventHandler} from "./handlers/update-displayname";
+import { WebRtcEventHandler } from "./handlers/webrtc";
 
 export class Websocket {
 
@@ -48,7 +49,8 @@ export class Websocket {
                 .setNext(new StartVideoForMemberEventHandler(partiesGetter))
                 .setNext(new StateUpdateEventHandler(partiesGetter))
                 .setNext(new UpdateDisplayNameEventHandler(partiesGetter))
-                .setNext(new WatchingTrailerEventHandler(partiesGetter));
+                .setNext(new WatchingTrailerEventHandler(partiesGetter))
+                .setNext(new WebRtcEventHandler(partiesGetter));
 
         // Any incoming message will be handled by the chained event handlers
         socket.use(async (packet, next) => {

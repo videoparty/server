@@ -56,6 +56,17 @@ export abstract class EventHandler {
      * Emits a socket event to all members in the party.
      * Possibility to exclude the sender.
      */
+    protected emitToPartyMember(event: string, memberId: string, args: any, party: Party) {
+        for (const client of party.connectedClients) {
+            if (client.id !== memberId) continue;
+            client.emit(event, args);
+        }
+    }
+
+    /**
+     * Emits a socket event to all members in the party.
+     * Possibility to exclude the sender.
+     */
     protected emitToParty(event: string, args: any, party: Party, senderId?: string) {
         for (const client of party.connectedClients) {
             if (client.id === senderId) continue;
