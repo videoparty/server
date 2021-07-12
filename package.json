@@ -1,7 +1,7 @@
 {
-  "name": "primevideoparty-server",
-  "version": "2.1.1",
-  "description": "Prime Video Party server, enabling player synchronization between users",
+  "name": "primeparty-server",
+  "version": "2.1.2",
+  "description": "PrimeParty server, enabling player synchronization between users",
   "author": "Marnix van den Bent",
   "license": "Apache-2.0",
   "scripts": {

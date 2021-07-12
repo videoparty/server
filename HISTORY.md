@@ -1,3 +1,6 @@
+# 2.1.2 - 12-07-2021
+- Renamed project to PrimeParty Server
+
 # 2.1.1 - 04-07-2021
 - Updated dependencies and fixed vulnerabilities
 

@@ -1,8 +1,8 @@
-# Prime Video Party server
+# Prime Party server
 ![Build](https://github.com/videoparty/server/workflows/Build/badge.svg)
 
 <p style="text-align: center" align="center">
-  <img src="https://primevideoparty.com/logo-full.png" alt="PvP logo"/>
+  <img src="https://primevideoparty.com/logo.png" alt="PvP logo"/>
 </p>
 
 Watch video's from primevideo.com together in sync! This server facilitates synchronization features using a websocket.
